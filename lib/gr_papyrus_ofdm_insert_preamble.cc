@@ -30,7 +30,7 @@
 #include <string.h>
 #include <stdio.h>
 
-#define VERBOSE_1 1
+#define VERBOSE_1 0
 
 gr_papyrus_ofdm_insert_preamble_sptr
 gr_papyrus_make_ofdm_insert_preamble(int fft_length,

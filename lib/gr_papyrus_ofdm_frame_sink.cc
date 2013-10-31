@@ -34,7 +34,7 @@
 #include <iostream>
 #include <string.h>
 
-#define VERBOSE 1
+#define VERBOSE 0
 #define VERBOSE_1 0
 
 inline void
