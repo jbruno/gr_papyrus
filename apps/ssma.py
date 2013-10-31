@@ -338,7 +338,8 @@ class ss_mac(object):
         self.trace_time = []
         self.trace_duration = []
 
-        print "reading traffice trace", filename
+        if self.verbose: 
+            print "reading traffice trace", filename
 
         i = 0
         for line in trace.split('\n'):
@@ -351,7 +352,8 @@ class ss_mac(object):
                 # print self.trace_time[i], "\t", self.trace_duration[i], "\t", self.trace_demand[i]
                 i += 1
 
-        print "finished reading trace"
+        if self.verbose: 
+            print "finished reading trace"
 
     def set_flow_graph(self, tb):
         self.tb = tb
@@ -381,8 +383,10 @@ class ss_mac(object):
         
 
 
-        print "**** IN ReceivePacket ****"
-        print "ok = ", ok
+        if self.verbose: 
+            print "**** IN ReceivePacket ****"
+        if self.verbose: 
+            print "ok = ", ok
         # if packet status is False, do nothing
         if not ok:
             return
@@ -414,7 +418,8 @@ class ss_mac(object):
             if pkt_type == ACK_PKT and self.state == "COOR":
                 self.new_carrier_map = payload[4:4 + self.occupied_tones/4]
 
-                print "RCV LINK%d-CTL: ACK  \t%s\t%s\t%8.3f" % (self.id, self.carrier_map, self.new_carrier_map, time.time() - self.start_time)
+                if self.verbose: 
+                    print "RCV LINK%d-CTL: ACK  \t%s\t%s\t%8.3f" % (self.id, self.carrier_map, self.new_carrier_map, time.time() - self.start_time)
                 self.reset_carrier_map()
                 self.req_timer.cancel()
                 self.update_state("TRAN")
@@ -455,7 +460,8 @@ class ss_mac(object):
                     loss_rate = 1 - float(self.data_pkts)/float(pktno)
                 else:
                     loss_rate = 0
-                print "RCV LINK%d: DATA\t%6d\t%s\t%8.3fs" % (self.id, pktno, self.carrier_map, time.time()-self.start_time)
+                if self.verbose: 
+                    print "RCV LINK%d: DATA\t%6d\t%s\t%8.3fs" % (self.id, pktno, self.carrier_map, time.time()-self.start_time)
 
 
     def handle_backoff_timeout(self):
@@ -915,7 +921,7 @@ def main():
 	
     # instantiate the MAC
 	# linklab, use ssma instead of csma
-	mac = ss_mac(options.sender, start_time, verbose=True)
+	mac = ss_mac(options.sender, start_time, verbose=options.verbose)
 
     print "RX frequency", options.rx_freq
     print "TX frequency", options.tx_freq
