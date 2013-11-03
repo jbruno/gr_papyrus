@@ -51,7 +51,7 @@ list(APPEND gr_papyrus_sources
 )
 
 add_library(gr_papyrus SHARED ${gr_papyrus_sources})
-target_link_libraries(gr_papyrus ${Boost_LIBRARIES} ${GRUEL_LIBRARIES} ${GNURADIO_CORE_LIBRARIES})
+target_link_libraries(gr_papyrus ${Boost_LIBRARIES} ${GNURADIO_RUNTIME_LIBRARIES})
 set_target_properties(gr_papyrus PROPERTIES DEFINE_SYMBOL "gr_papyrus_EXPORTS")
 
 ########################################################################
