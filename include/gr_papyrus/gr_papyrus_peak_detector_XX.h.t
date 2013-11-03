@@ -27,7 +27,7 @@
 
 #include "gr_papyrus/gr_papyrus_api.h"
 
-#include <gr_sync_block.h>
+#include <gnuradio/sync_block.h>
 
 class @NAME@;
 typedef boost::shared_ptr<@NAME@> @SPTR_NAME@;
@@ -61,7 +61,7 @@ gr_papyrus_make_@BASE_NAME@ (float threshold_factor_rise = 0.25,
  *        This look-ahead range.
  * \param alpha The gain value of a moving average filter
  */
-class @NAME@ : public gr_sync_block
+class @NAME@ : public gr::sync_block
 {
   friend @SPTR_NAME@ gr_papyrus_make_@BASE_NAME@ (float threshold_factor_rise,
                       float threshold_factor_fall,

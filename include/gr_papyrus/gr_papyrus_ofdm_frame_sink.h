@@ -25,8 +25,8 @@
 
 #include "gr_papyrus/gr_papyrus_api.h"
 
-#include <gr_sync_block.h>
-#include <gr_msg_queue.h>
+#include <gnuradio/sync_block.h>
+#include <gnuradio/msg_queue.h>
 
 class gr_papyrus_ofdm_frame_sink;
 typedef boost::shared_ptr<gr_papyrus_ofdm_frame_sink> gr_papyrus_ofdm_frame_sink_sptr;
@@ -34,7 +34,7 @@ typedef boost::shared_ptr<gr_papyrus_ofdm_frame_sink> gr_papyrus_ofdm_frame_sink
 GR_PAPYRUS_API gr_papyrus_ofdm_frame_sink_sptr 
 gr_papyrus_make_ofdm_frame_sink (const std::vector<gr_complex> &sym_position, 
              const std::vector<unsigned char> &sym_value_out,
-             gr_msg_queue_sptr target_queue, unsigned int fft_length, unsigned int occupied_tones, std::string carrier_map,
+             gr::msg_queue::sptr target_queue, unsigned int fft_length, unsigned int occupied_tones, std::string carrier_map,
              float phase_gain=0.25, float freq_gain=0.25*0.25/4.0);
 
 /*!
@@ -45,12 +45,12 @@ gr_papyrus_make_ofdm_frame_sink (const std::vector<gr_complex> &sym_position,
  * we want to be able to pass in a reference to an object to do the demapping and slicing
  * for a given modulation type.
  */
-class gr_papyrus_ofdm_frame_sink : public gr_sync_block
+class gr_papyrus_ofdm_frame_sink : public gr::sync_block
 {
   friend gr_papyrus_ofdm_frame_sink_sptr GR_PAPYRUS_API
   gr_papyrus_make_ofdm_frame_sink (const std::vector<gr_complex> &sym_position, 
                const std::vector<unsigned char> &sym_value_out,
-               gr_msg_queue_sptr target_queue,  unsigned int fft_length, unsigned int occupied_tones, std::string carrier_map,
+               gr::msg_queue::sptr target_queue,  unsigned int fft_length, unsigned int occupied_tones, std::string carrier_map,
                float phase_gain, float freq_gain);
 
  private:
@@ -59,30 +59,30 @@ class gr_papyrus_ofdm_frame_sink : public gr_sync_block
   static const int MAX_PKT_LEN    = 4096;
   static const int HEADERBYTELEN   = 4;
 
-  gr_msg_queue_sptr  d_target_queue;        // where to send the packet when received
-  state_t            d_state;
-  unsigned int       d_header;            // header bits
-  int             d_headerbytelen_cnt;    // how many so far
+  gr::msg_queue::sptr   d_target_queue;        // where to send the packet when received
+  state_t               d_state;
+  unsigned int          d_header;            // header bits
+  int                   d_headerbytelen_cnt;    // how many so far
 
-  unsigned char      *d_bytes_out;              // hold the current bytes produced by the demapper    
+  unsigned char         *d_bytes_out;              // hold the current bytes produced by the demapper    
  
   // linklab, fft_length
-  unsigned int       d_fft_length;
+  unsigned int          d_fft_length;
  
-  unsigned int       d_occupied_carriers;
+  unsigned int          d_occupied_carriers;
 
   // linklab, carrier map 
-  std::string d_carrier_map;
+  std::string           d_carrier_map;
 
-  unsigned int       d_byte_offset;
-  unsigned int       d_partial_byte;
+  unsigned int          d_byte_offset;
+  unsigned int          d_partial_byte;
 
-  unsigned char      d_packet[MAX_PKT_LEN];    // assembled payload
-  int              d_packetlen;        // length of packet
-  int                d_packet_whitener_offset;  // offset into whitener string to use
-  int             d_packetlen_cnt;        // how many so far
+  unsigned char         d_packet[MAX_PKT_LEN];    // assembled payload
+  int                   d_packetlen;        // length of packet
+  int                     d_packet_whitener_offset;  // offset into whitener string to use
+  int                   d_packetlen_cnt;        // how many so far
 
-  gr_complex * d_derotated_output;  // Pointer to output stream to send deroated symbols out
+  gr_complex *          d_derotated_output;  // Pointer to output stream to send deroated symbols out
 
   std::vector<gr_complex>    d_sym_position;
   std::vector<unsigned char> d_sym_value_out;
@@ -102,7 +102,7 @@ class gr_papyrus_ofdm_frame_sink : public gr_sync_block
  protected:
   gr_papyrus_ofdm_frame_sink(const std::vector<gr_complex> &sym_position, 
              const std::vector<unsigned char> &sym_value_out,
-             gr_msg_queue_sptr target_queue, unsigned int fft_length, unsigned int occupied_tones, std::string carrier_map,
+             gr::msg_queue::sptr target_queue, unsigned int fft_length, unsigned int occupied_tones, std::string carrier_map,
              float phase_gain, float freq_gain);
 
   void enter_search();

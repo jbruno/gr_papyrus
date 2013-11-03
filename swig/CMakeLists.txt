@@ -38,7 +38,7 @@ list(APPEND GR_SWIG_INCLUDE_DIRS "${CMAKE_CURRENT_BINARY_DIR}/../include/")
 include(GrSwig)
 
 foreach(incdir ${GNURADIO_RUNTIME_INCLUDE_DIRS})
-    list(APPEND GR_SWIG_INCLUDE_DIRS ${incdir}/swig)
+    list(APPEND GR_SWIG_INCLUDE_DIRS ${incdir}/gnuradio/swig)
 endforeach(incdir)
 
 set(GR_SWIG_LIBRARIES gr_papyrus)

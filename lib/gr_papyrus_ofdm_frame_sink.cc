@@ -25,9 +25,9 @@
 #endif
 
 #include <gr_papyrus/gr_papyrus_ofdm_frame_sink.h>
-#include <gr_io_signature.h>
-#include <gr_expj.h>
-#include <gr_math.h>
+#include <gnuradio/io_signature.h>
+#include <gnuradio/expj.h>
+#include <gnuradio/math.h>
 #include <math.h>
 #include <cstdio>
 #include <stdexcept>
@@ -129,7 +129,7 @@ unsigned int gr_papyrus_ofdm_frame_sink::demapper(const gr_complex *in,
       gr_complex sigrot = in[d_subcarrier_map[i]]*carrier*d_dfe[i];
       
       if(d_derotated_output != NULL){
-	d_derotated_output[i] = sigrot;
+        d_derotated_output[i] = sigrot;
       }
       
       unsigned char bits = slicer(sigrot);
@@ -144,15 +144,15 @@ unsigned int gr_papyrus_ofdm_frame_sink::demapper(const gr_complex *in,
       i++;
 
       if((8 - d_byte_offset) >= d_nbits) {
-	d_partial_byte |= bits << (d_byte_offset);
-	d_byte_offset += d_nbits;
+        d_partial_byte |= bits << (d_byte_offset);
+        d_byte_offset += d_nbits;
       }
       else {
-	d_nresid = d_nbits-(8-d_byte_offset);
-	int mask = ((1<<(8-d_byte_offset))-1);
-	d_partial_byte |= (bits & mask) << d_byte_offset;
-	d_resid = bits >> (8-d_byte_offset);
-	d_byte_offset += (d_nbits - d_nresid);
+        d_nresid = d_nbits-(8-d_byte_offset);
+        int mask = ((1<<(8-d_byte_offset))-1);
+        d_partial_byte |= (bits & mask) << d_byte_offset;
+        d_resid = bits >> (8-d_byte_offset);
+        d_byte_offset += (d_nbits - d_nresid);
       }
       //       printf("demod symbol: %.4f + j%.4f   bits: %x   partial_byte: %x   byte_offset: %d   resid: %x   nresid: %d\n",
       //          in[i-1].real(), in[i-1].imag(), bits, d_partial_byte, d_byte_offset, d_resid, d_nresid);
@@ -185,7 +185,7 @@ unsigned int gr_papyrus_ofdm_frame_sink::demapper(const gr_complex *in,
 gr_papyrus_ofdm_frame_sink_sptr
 gr_papyrus_make_ofdm_frame_sink(const std::vector<gr_complex> &sym_position, 
             const std::vector<unsigned char> &sym_value_out,
-            gr_msg_queue_sptr target_queue, unsigned int fft_length, unsigned int occupied_carriers, std::string carrier_map,
+            gr::msg_queue::sptr target_queue, unsigned int fft_length, unsigned int occupied_carriers, std::string carrier_map,
             float phase_gain, float freq_gain)
 {
   return gr_papyrus_ofdm_frame_sink_sptr(new gr_papyrus_ofdm_frame_sink(sym_position, sym_value_out,
@@ -196,11 +196,11 @@ gr_papyrus_make_ofdm_frame_sink(const std::vector<gr_complex> &sym_position,
 
 gr_papyrus_ofdm_frame_sink::gr_papyrus_ofdm_frame_sink(const std::vector<gr_complex> &sym_position, 
                        const std::vector<unsigned char> &sym_value_out,
-                       gr_msg_queue_sptr target_queue, unsigned int fft_length, unsigned int occupied_carriers, std::string carrier_map,
+                       gr::msg_queue::sptr target_queue, unsigned int fft_length, unsigned int occupied_carriers, std::string carrier_map,
                        float phase_gain, float freq_gain)
-  : gr_sync_block ("ofdm_frame_sink",
-           gr_make_io_signature2 (2, 2, sizeof(gr_complex)*occupied_carriers, sizeof(char)),
-           gr_make_io_signature (1, 1, sizeof(gr_complex)*occupied_carriers)),
+  : gr::sync_block ("ofdm_frame_sink",
+           gr::io_signature::make2 (2, 2, sizeof(gr_complex)*occupied_carriers, sizeof(char)),
+           gr::io_signature::make (1, 1, sizeof(gr_complex)*occupied_carriers)),
     d_target_queue(target_queue), 
     d_occupied_carriers(occupied_carriers), 
     // linklab, add fft length
@@ -270,7 +270,7 @@ gr_papyrus_ofdm_frame_sink::initialize()
     for(j = 0; j < 4; j++) {
       k = (strtol(&c, NULL, 16) >> (3-j)) & 0x1;
       if(k) {
-	d_subcarrier_map.push_back(4*i + j - diff_left);
+    d_subcarrier_map.push_back(4*i + j - diff_left);
       }
     }
   }
@@ -360,9 +360,9 @@ gr_papyrus_ofdm_frame_sink::work (int noutput_items,
 
     if (VERBOSE) {
       if(sig[0])
-	fprintf(stdout,"ERROR -- Found SYNC in HAVE_SYNC\n");
+    fprintf(stdout,"ERROR -- Found SYNC in HAVE_SYNC\n");
       fprintf(stdout,"Header Search bitcnt=%d, header=0x%08x\n",
-	      d_headerbytelen_cnt, d_header);
+          d_headerbytelen_cnt, d_header);
     }
 
     if (VERBOSE_1)
@@ -373,42 +373,42 @@ gr_papyrus_ofdm_frame_sink::work (int noutput_items,
       j++;
       
       if (++d_headerbytelen_cnt == HEADERBYTELEN) {
-	
-	if (VERBOSE)
-	  fprintf(stdout, "got header: 0x%08x\n", d_header);
-	
-	// we have a full header, check to see if it has been received properly
-	if (header_ok()){
-	  enter_have_header();
-	  
-	  if (VERBOSE)
-	    printf("\nPacket Length: %d\n", d_packetlen);
-	  
+        
+        if (VERBOSE)
+        fprintf(stdout, "got header: 0x%08x\n", d_header);
+        
+        // we have a full header, check to see if it has been received properly
+        if (header_ok()){
+            enter_have_header();
+            
+            if (VERBOSE)
+                printf("\nPacket Length: %d\n", d_packetlen);
+            
+                if (VERBOSE_1)
+                    printf("%s:  header OK 0x%08x pkt_len %d\n", __FUNCTION__, d_header,d_packetlen);
+            while((j < bytes) && (d_packetlen_cnt < d_packetlen)) {
+                d_packet[d_packetlen_cnt++] = d_bytes_out[j++];
+            }
+            
+            if(d_packetlen_cnt == d_packetlen) {
+                gr::message::sptr msg =
+                gr::message::make(0, d_packet_whitener_offset, 0, d_packetlen);
+                memcpy(msg->msg(), d_packet, d_packetlen_cnt);
+                d_target_queue->insert_tail(msg);        // send it
+                msg.reset();                  // free it up
+                
+                enter_search();                
+            }
+        }
+        else {
           if (VERBOSE_1)
-            printf("%s:  header OK 0x%08x pkt_len %d\n", __FUNCTION__, d_header,d_packetlen);
-	  while((j < bytes) && (d_packetlen_cnt < d_packetlen)) {
-	    d_packet[d_packetlen_cnt++] = d_bytes_out[j++];
-	  }
-	  
-	  if(d_packetlen_cnt == d_packetlen) {
-	    gr_message_sptr msg =
-	      gr_make_message(0, d_packet_whitener_offset, 0, d_packetlen);
-	    memcpy(msg->msg(), d_packet, d_packetlen_cnt);
-	    d_target_queue->insert_tail(msg);		// send it
-	    msg.reset();  				// free it up
-	    
-	    enter_search();				
-	  }
-	}
-	else {
-          if (VERBOSE_1)
-	     printf("--- header NOT OK %x \n", d_header);
-	  enter_search();				// bad header
-	}
+            printf("--- header NOT OK %x \n", d_header);
+            enter_search();                // bad header
+        }
       }
       else {
         if (VERBOSE_1)
-	   printf("--- d_headerbytelen_cnt %d does not match HEADERBYTELEN %d, NEEDS MORE BYTES\n",d_headerbytelen_cnt, HEADERBYTELEN);
+        printf("--- d_headerbytelen_cnt %d does not match HEADERBYTELEN %d, NEEDS MORE BYTES\n",d_headerbytelen_cnt, HEADERBYTELEN);
       }
     }
     break;
@@ -436,20 +436,20 @@ gr_papyrus_ofdm_frame_sink::work (int noutput_items,
     while(j < bytes) {
       d_packet[d_packetlen_cnt++] = d_bytes_out[j++];
       
-      if (d_packetlen_cnt == d_packetlen){		// packet is filled
-	// build a message
-	// NOTE: passing header field as arg1 is not scalable
+      if (d_packetlen_cnt == d_packetlen){        // packet is filled
+        // build a message
+        // NOTE: passing header field as arg1 is not scalable
         if (VERBOSE_1)
-           printf("%s: building packet d_packetlen %d",__FUNCTION__, d_packetlen);
-	gr_message_sptr msg =
-	  gr_make_message(0, d_packet_whitener_offset, 0, d_packetlen_cnt);
-	memcpy(msg->msg(), d_packet, d_packetlen_cnt);
-	
-	d_target_queue->insert_tail(msg);		// send it
-	msg.reset();  				// free it up
-	
-	enter_search();
-	break;
+            printf("%s: building packet d_packetlen %d",__FUNCTION__, d_packetlen);
+        gr::message::sptr msg =
+        gr::message::make(0, d_packet_whitener_offset, 0, d_packetlen_cnt);
+        memcpy(msg->msg(), d_packet, d_packetlen_cnt);
+        
+        d_target_queue->insert_tail(msg);        // send it
+        msg.reset();                  // free it up
+        
+        enter_search();
+        break;
       }
     }
     break;

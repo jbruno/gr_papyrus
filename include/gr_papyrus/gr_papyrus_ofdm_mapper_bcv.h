@@ -25,9 +25,9 @@
 
 #include "gr_papyrus/gr_papyrus_api.h"
 
-#include <gr_sync_block.h>
-#include <gr_message.h>
-#include <gr_msg_queue.h>
+#include <gnuradio/sync_block.h>
+#include <gnuradio/message.h>
+#include <gnuradio/msg_queue.h>
 
 class gr_papyrus_ofdm_mapper_bcv;
 typedef boost::shared_ptr<gr_papyrus_ofdm_mapper_bcv> gr_papyrus_ofdm_mapper_bcv_sptr;
@@ -45,7 +45,7 @@ gr_papyrus_make_ofdm_mapper_bcv (const std::vector<gr_complex> &constellation, u
  * \ingroup ofdm_blk
  */
 
-class gr_papyrus_ofdm_mapper_bcv : public gr_sync_block
+class gr_papyrus_ofdm_mapper_bcv : public gr::sync_block
 {
   friend gr_papyrus_ofdm_mapper_bcv_sptr GR_PAPYRUS_API
   gr_papyrus_make_ofdm_mapper_bcv (const std::vector<gr_complex> &constellation, unsigned msgq_limit, 
@@ -58,16 +58,16 @@ class gr_papyrus_ofdm_mapper_bcv : public gr_sync_block
               std::string carrier_map); // linklab, add carrier_map to indicate subcarrier allocation
 
  private:
-  std::vector<gr_complex> d_constellation;
-  gr_msg_queue_sptr    d_msgq;
-  gr_message_sptr    d_msg;
-  unsigned        d_msg_offset;
-  bool            d_eof;
+  std::vector<gr_complex>   d_constellation;
+  gr::msg_queue::sptr       d_msgq;
+  gr::message::sptr         d_msg;
+  unsigned                  d_msg_offset;
+  bool                      d_eof;
   
-  unsigned int         d_occupied_carriers;
-  unsigned int         d_fft_length;
-  unsigned int         d_bit_offset;
-  int            d_pending_flag;
+  unsigned int              d_occupied_carriers;
+  unsigned int              d_fft_length;
+  unsigned int              d_bit_offset;
+  int                       d_pending_flag;
  
   // linklab, d_carrier_map to indicate subcarrier allocation  
   std::string d_carrier_map;
@@ -85,7 +85,7 @@ class gr_papyrus_ofdm_mapper_bcv : public gr_sync_block
  public:
   ~gr_papyrus_ofdm_mapper_bcv(void);
 
-  gr_msg_queue_sptr GR_PAPYRUS_API msgq() const { return d_msgq; }
+  gr::msg_queue::sptr GR_PAPYRUS_API msgq() const { return d_msgq; }
 
   int work(int noutput_items,
        gr_vector_const_void_star &input_items,

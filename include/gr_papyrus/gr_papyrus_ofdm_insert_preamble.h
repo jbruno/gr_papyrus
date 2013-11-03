@@ -24,7 +24,7 @@
 
 #include "gr_papyrus/gr_papyrus_api.h"
 
-#include <gr_block.h>
+#include <gnuradio/block.h>
 #include <vector>
 
 class gr_papyrus_ofdm_insert_preamble;
@@ -64,7 +64,7 @@ gr_papyrus_make_ofdm_insert_preamble(int fft_length,
  * \param preamble   vector of symbols that represent the pre-modulated preamble.
  */
 
-class gr_papyrus_ofdm_insert_preamble : public gr_block
+class gr_papyrus_ofdm_insert_preamble : public gr::block
 {
   friend gr_papyrus_ofdm_insert_preamble_sptr GR_PAPYRUS_API
   gr_papyrus_make_ofdm_insert_preamble(int fft_length,

@@ -25,7 +25,7 @@
 
 #include "gr_papyrus/gr_papyrus_api.h"
 
-#include <gr_block.h>
+#include <gnuradio/block.h>
 #include <vector>
 
 class gr_papyrus_ofdm_frame_acquisition;
@@ -55,7 +55,7 @@ gr_papyrus_make_ofdm_frame_acquisition (unsigned int occupied_carriers, unsigned
  * distortion caused by the channel.
  */
 
-class gr_papyrus_ofdm_frame_acquisition : public gr_block
+class gr_papyrus_ofdm_frame_acquisition : public gr::block
 {
   /*! 
    * \brief Build an OFDM correlator and equalizer.

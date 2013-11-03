@@ -22,7 +22,7 @@
 #ifndef INCLUDED_GR_PAPYRUS_API_H
 #define INCLUDED_GR_PAPYRUS_API_H
 
-#include <gruel/attributes.h>
+#include <gnuradio/attributes.h>
 
 #ifdef gnuradio_papyrus_EXPORTS
 #  define GR_PAPYRUS_API __GR_ATTR_EXPORT

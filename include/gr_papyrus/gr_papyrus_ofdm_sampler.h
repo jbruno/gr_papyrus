@@ -23,7 +23,7 @@
 #ifndef INCLUDED_GR_PAPYRUS_SAMPLER_H
 #define INCLUDED_GR_PAPYRUS_SAMPLER_H
 
-#include <gr_sync_block.h>
+#include <gnuradio/sync_block.h>
 
 #include <gr_papyrus/gr_papyrus_api.h>
 
@@ -39,7 +39,7 @@ gr_papyrus_make_ofdm_sampler (unsigned int fft_length,
  * \brief does the rest of the OFDM stuff
  * \ingroup ofdm_blk
  */
-class gr_papyrus_ofdm_sampler : public gr_block
+class gr_papyrus_ofdm_sampler : public gr::block
 {
   friend gr_papyrus_ofdm_sampler_sptr GR_PAPYRUS_API
   gr_papyrus_make_ofdm_sampler (unsigned int fft_length, 

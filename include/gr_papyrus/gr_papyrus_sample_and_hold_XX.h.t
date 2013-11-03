@@ -27,7 +27,7 @@
 
 #include "gr_papyrus/gr_papyrus_api.h"
 
-#include <gr_sync_block.h>
+#include <gnuradio/sync_block.h>
 
 class @NAME@;
 typedef boost::shared_ptr<@NAME@> @SPTR_NAME@;
@@ -42,7 +42,7 @@ gr_papyrus_make_@BASE_NAME@ ();
  * Samples the data stream (input stream 0) and holds the value
  * if the control signal is 1 (intput stream 1).
  */
-class @NAME@ : public gr_sync_block
+class @NAME@ : public gr::sync_block
 {
   friend @SPTR_NAME@ gr_papyrus_make_@BASE_NAME@ ();
 

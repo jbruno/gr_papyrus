@@ -24,7 +24,7 @@
 #endif
 
 #include <gr_papyrus/gr_papyrus_ofdm_insert_preamble.h>
-#include <gr_io_signature.h>
+#include <gnuradio/io_signature.h>
 #include <stdexcept>
 #include <iostream>
 #include <string.h>
@@ -34,22 +34,21 @@
 
 gr_papyrus_ofdm_insert_preamble_sptr
 gr_papyrus_make_ofdm_insert_preamble(int fft_length,
-				  const std::vector<std::vector<gr_complex> > &preamble)
+                                     const std::vector<std::vector<gr_complex> > &preamble)
 {
   return gr_papyrus_ofdm_insert_preamble_sptr(new gr_papyrus_ofdm_insert_preamble(fft_length,
                                   preamble));
 }
 
 gr_papyrus_ofdm_insert_preamble::gr_papyrus_ofdm_insert_preamble
-       (int fft_length,
-    const std::vector<std::vector<gr_complex> > &preamble)
-  : gr_block("ofdm_insert_preamble",
-	     gr_make_io_signature2(1, 2,
-				   sizeof(gr_complex)*fft_length,
-				   sizeof(char)),
-	     gr_make_io_signature2(1, 2,
-				   sizeof(gr_complex)*fft_length,
-				   sizeof(char))),
+       (int fft_length, const std::vector<std::vector<gr_complex> > &preamble)
+  : gr::block("ofdm_insert_preamble",
+             gr::io_signature::make2(1, 2,
+                sizeof(gr_complex)*fft_length,
+                sizeof(char)),
+             gr::io_signature::make2(1, 2,
+                sizeof(gr_complex)*fft_length,
+                sizeof(char))),
     d_fft_length(fft_length),
     d_preamble(preamble),
     d_state(ST_IDLE),

@@ -26,7 +26,7 @@
 #endif
 
 #include <gr_papyrus/gr_papyrus_ofdm_mapper_bcv.h>
-#include <gr_io_signature.h>
+#include <gnuradio/io_signature.h>
 #include <stdexcept>
 #include <string.h>
 #include <cstdio>
@@ -35,8 +35,8 @@
 
 gr_papyrus_ofdm_mapper_bcv_sptr
 gr_papyrus_make_ofdm_mapper_bcv (const std::vector<gr_complex> &constellation, unsigned int msgq_limit, 
-			      unsigned int occupied_carriers, unsigned int fft_length,
-			  std::string carrier_map) // linklab, add carrier_map to indicate subcarrier allocation
+                                 unsigned int occupied_carriers, unsigned int fft_length,
+                                 std::string carrier_map) // linklab, add carrier_map to indicate subcarrier allocation
 {
   return gr_papyrus_ofdm_mapper_bcv_sptr (new gr_papyrus_ofdm_mapper_bcv (constellation, msgq_limit, 
                               occupied_carriers, fft_length, 
@@ -47,11 +47,11 @@ gr_papyrus_make_ofdm_mapper_bcv (const std::vector<gr_complex> &constellation, u
 gr_papyrus_ofdm_mapper_bcv::gr_papyrus_ofdm_mapper_bcv (const std::vector<gr_complex> &constellation, unsigned int msgq_limit, 
                     unsigned int occupied_carriers, unsigned int fft_length, 
                     std::string carrier_map) // linklab, add carrier_map to indicate subcarrier allocation
-  : gr_sync_block ("ofdm_mapper_bcv",
-           gr_make_io_signature (0, 0, 0),
-           gr_make_io_signature2 (1, 2, sizeof(gr_complex)*fft_length, sizeof(char))),
+  : gr::sync_block ("ofdm_mapper_bcv",
+           gr::io_signature::make (0, 0, 0),
+           gr::io_signature::make2 (1, 2, sizeof(gr_complex)*fft_length, sizeof(char))),
     d_constellation(constellation),
-    d_msgq(gr_make_msg_queue(msgq_limit)), d_msg_offset(0), d_eof(false),
+    d_msgq(gr::msg_queue::make(msgq_limit)), d_msg_offset(0), d_eof(false),
     d_occupied_carriers(occupied_carriers),
     d_fft_length(fft_length),
     d_carrier_map(carrier_map), // linklab, add carrier_map to indicate subcarrier allocation

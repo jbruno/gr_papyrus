@@ -27,7 +27,7 @@
 #endif
 
 #include <gr_papyrus/@NAME@.h>
-#include <gr_io_signature.h>
+#include <gnuradio/io_signature.h>
 #include <string.h>
 #include <math.h> //linklab
 
@@ -44,9 +44,9 @@ gr_papyrus_make_@BASE_NAME@ (float threshold_factor_rise,
 @NAME@::@NAME@ (float threshold_factor_rise, 
         float threshold_factor_fall,
         int look_ahead, float alpha, int carrier_num)
-  : gr_sync_block ("@BASE_NAME@",
-           gr_make_io_signature2 (2, 2, sizeof (float), sizeof (@I_TYPE@)),
-           gr_make_io_signature (1, 1, sizeof (char))),
+  : gr::sync_block ("@BASE_NAME@",
+           gr::io_signature::make2 (2, 2, sizeof (float), sizeof (@I_TYPE@)),
+           gr::io_signature::make (1, 1, sizeof (char))),
     d_threshold_factor_rise(threshold_factor_rise), 
     d_threshold_factor_fall(threshold_factor_fall),
     d_look_ahead(look_ahead), d_avg_alpha(alpha), 
