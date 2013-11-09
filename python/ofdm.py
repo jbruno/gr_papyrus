@@ -22,7 +22,7 @@
 
 import math
 import os
-from gnuradio import gr, digital, blocks
+from gnuradio import gr, digital, blocks, fft
 from gnuradio.digital import ofdm_packet_utils
 import gnuradio.gr.gr_threading as _threading
 from gnuradio.digital import psk, qam
@@ -130,10 +130,10 @@ class ofdm_mod(gr.hier_block2):
         if VERBOSE:
           print "%s:%s" %(os.path.basename(__file__), __name__)
           print "**** (ofdm_mod) padded_preamble", padded_preambles
-        self.ifft = gr.fft_vcc(self._fft_length, False, win, True)
+        self.ifft = fft.fft_vcc(self._fft_length, False, win, True)
         self.cp_adder = digital.ofdm_cyclic_prefixer(self._fft_length,
                                                           symbol_length)
-        self.scale = gr.multiply_const_cc(1.0 / math.sqrt(self._fft_length))
+        self.scale = blocks.multiply_const_cc(1.0 / math.sqrt(self._fft_length))
         
         self.connect((self._pkt_input, 0), (self.preambles, 0))
         self.connect((self._pkt_input, 1), (self.preambles, 1))
