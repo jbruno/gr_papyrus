@@ -23,14 +23,4 @@
 // @WARNING@
 
 GR_SWIG_BLOCK_MAGIC(gr_papyrus,@BASE_NAME@)
-
-@SPTR_NAME@ gr_papyrus_make_@BASE_NAME@ ();
-
-class @NAME@ : public gr_sync_block
-{
- private:
-  @NAME@ ();
-
- public:
-  float d_data; //linklab
-};
+%include "gr_papyrus/@NAME@.h"

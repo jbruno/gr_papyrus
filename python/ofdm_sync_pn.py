@@ -22,7 +22,7 @@
 
 import math
 from numpy import fft
-from gnuradio import gr
+from gnuradio import gr, blocks, filter
 
 import gr_papyrus
 
@@ -40,45 +40,45 @@ class ofdm_sync_pn(gr.hier_block2):
 				gr.io_signature(1, 1, gr.sizeof_gr_complex), # Input signature
                                 gr.io_signature2(2, 2, gr.sizeof_float, gr.sizeof_char)) # Output signature
 
-        self.input = gr.add_const_cc(0)
+        self.input = blocks.add_const_cc(0)
 
         # PN Sync
 
         # Create a delay line
-        self.delay = gr.delay(gr.sizeof_gr_complex, fft_length/2)
+        self.delay = blocks.delay(gr.sizeof_gr_complex, fft_length/2)
 
         # Correlation from ML Sync
-        self.conjg = gr.conjugate_cc();
-        self.corr = gr.multiply_cc();
+        self.conjg = blocks.conjugate_cc();
+        self.corr = blocks.multiply_cc();
 
         # Create a moving sum filter for the corr output
         if 1:
             moving_sum_taps = [1.0 for i in range(fft_length//2)]
-            self.moving_sum_filter = gr.fir_filter_ccf(1,moving_sum_taps)
+            self.moving_sum_filter = filter.fir_filter_ccf(1,moving_sum_taps)
         else:
             moving_sum_taps = [complex(1.0,0.0) for i in range(fft_length//2)]
-            self.moving_sum_filter = gr.fft_filter_ccc(1,moving_sum_taps)
+            self.moving_sum_filter = filter.fft_filter_ccc(1,moving_sum_taps)
 
         # Create a moving sum filter for the input
-        self.inputmag2 = gr.complex_to_mag_squared()
+        self.inputmag2 = blocks.complex_to_mag_squared()
         movingsum2_taps = [1.0 for i in range(fft_length//2)]
 
         if 1:
-            self.inputmovingsum = gr.fir_filter_fff(1,movingsum2_taps)
+            self.inputmovingsum = filter.fir_filter_fff(1,movingsum2_taps)
         else:
-            self.inputmovingsum = gr.fft_filter_fff(1,movingsum2_taps)
+            self.inputmovingsum = filter.fft_filter_fff(1,movingsum2_taps)
 
-        self.square = gr.multiply_ff()
-        self.normalize = gr.divide_ff()
+        self.square = blocks.multiply_ff()
+        self.normalize = blocks.divide_ff()
      
         # Get magnitude (peaks) and angle (phase/freq error)
-        self.c2mag = gr.complex_to_mag_squared()
-        self.angle = gr.complex_to_arg()
+        self.c2mag = blocks.complex_to_mag_squared()
+        self.angle = blocks.complex_to_arg()
 
         self.sample_and_hold = gr_papyrus.sample_and_hold_ff()
 
         #ML measurements input to sampler block and detect
-        self.sub1 = gr.add_const_ff(-1)
+        self.sub1 = blocks.add_const_ff(-1)
         # linklab, change peak detector parameters: use higher threshold to detect rise/fall of peak
         #self.pk_detect = gr.peak_detector_fb(0.20, 0.20, 30, 0.001)
         self.pk_detect = gr_papyrus.peak_detector_fb(0.50, 0.60, 30, 0.001, carrier_num) # linklab
@@ -105,7 +105,7 @@ class ofdm_sync_pn(gr.hier_block2):
 
         # Create a moving sum filter for the corr output
         matched_filter_taps = [1.0/cp_length for i in range(cp_length)]
-        self.matched_filter = gr.fir_filter_fff(1,matched_filter_taps)
+        self.matched_filter = filter.fir_filter_fff(1,matched_filter_taps)
         self.connect(self.normalize, self.matched_filter)
        
         # linklab, provide the signal power into peak detector, linklab

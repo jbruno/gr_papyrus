@@ -22,7 +22,7 @@
 
 import math
 import os
-from gnuradio import gr, digital
+from gnuradio import gr, digital, blocks
 from gnuradio.digital import ofdm_packet_utils
 import gnuradio.gr.gr_threading as _threading
 from gnuradio.digital import psk, qam
@@ -372,7 +372,7 @@ class ofdm_demod(gr.hier_block2):
                                       "ofdm_frame_sink_c.dat"))
         else:
             self.connect(self.ofdm_demod,
-                         gr.null_sink(gr.sizeof_gr_complex*self._occupied_tones))
+                         blocks.null_sink(gr.sizeof_gr_complex*self._occupied_tones))
 
         if options.verbose:
             self._print_verbage()

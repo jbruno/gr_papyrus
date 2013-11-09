@@ -21,8 +21,9 @@
 # 
 
 import math
-from numpy import fft
-from gnuradio import gr
+from numpy import fft as np_fft
+from gnuradio import gr, filter, blocks, analog
+from gnuradio import fft as gr_fft
 from gnuradio.digital.ofdm_sync_ml import ofdm_sync_ml
 from gnuradio.digital.ofdm_sync_pnac import ofdm_sync_pnac
 from gnuradio.digital.ofdm_sync_fixed import ofdm_sync_fixed
@@ -72,13 +73,13 @@ class ofdm_receiver(gr.hier_block2):
         tb = bw*0.04
         print "ofdm_receiver:__init__:occupied_tones %s fft_length %d "  % (occupied_tones, fft_length)
         
-        chan_coeffs = gr.firdes.low_pass (1.0,                     # gain
+        chan_coeffs = filter.firdes.low_pass (1.0,                     # gain
                                           1.0,                     # sampling rate
                                           bw+tb,                   # midpoint of trans. band
                                           tb,                      # width of trans. band
-                                          gr.firdes.WIN_HAMMING)   # filter type
+                                          filter.firdes.WIN_HAMMING)   # filter type
         
-        self.chan_filt = gr.fft_filter_ccc(1, chan_coeffs)
+        self.chan_filt = filter.fft_filter_ccc(1, chan_coeffs)
 
         # linklab, get ofdm parameters
         self._fft_length = fft_length
@@ -97,8 +98,8 @@ class ofdm_receiver(gr.hier_block2):
         ks0 = fft_length*[0,]
         ks0[zeros_on_left : zeros_on_left + occupied_tones] = ks[0]
 
-        ks0 = fft.ifftshift(ks0)
-        ks0time = fft.ifft(ks0)
+        ks0 = np_fft.ifftshift(ks0)
+        ks0time = np_fft.ifft(ks0)
         # ADD SCALING FACTOR
         ks0time = ks0time.tolist()
 
@@ -137,12 +138,12 @@ class ofdm_receiver(gr.hier_block2):
         # Set up blocks
 
         # Create a delay line, linklab
-        self.delay = gr.delay(gr.sizeof_gr_complex, fft_length)
+        self.delay = blocks.delay(gr.sizeof_gr_complex, fft_length)
 
-        self.nco = gr.frequency_modulator_fc(nco_sensitivity)         # generate a signal proportional to frequency error of sync block
-        self.sigmix = gr.multiply_cc()
+        self.nco = analog.frequency_modulator_fc(nco_sensitivity)         # generate a signal proportional to frequency error of sync block
+        self.sigmix = blocks.multiply_cc()
         self.sampler = gr_papyrus.ofdm_sampler(fft_length, fft_length+cp_length)
-        self.fft_demod = gr.fft_vcc(fft_length, True, win, True)
+        self.fft_demod = gr_fft.fft_vcc(fft_length, True, win, True)
         self.ofdm_frame_acq = gr_papyrus.ofdm_frame_acquisition(occupied_tones,
                                                                   fft_length,
                                                                   cp_length, ks[0])
@@ -188,8 +189,8 @@ class ofdm_receiver(gr.hier_block2):
         self._ks0 = self._fft_length*[0,]
         self._ks0[self._zeros_on_left : self._zeros_on_left + self._occupied_tones] = self._ks[0]
         
-        self._ks0 = fft.ifftshift(self._ks0)
-        self._ks0time = fft.ifft(self._ks0)
+        self._ks0 = np_fft.ifftshift(self._ks0)
+        self._ks0time = np_fft.ifft(self._ks0)
 
         # ADD SCALING FACTOR
         self._ks0time = self._ks0time.tolist()

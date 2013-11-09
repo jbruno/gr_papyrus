@@ -23,7 +23,7 @@
 import math
 import cmath 
 from numpy import fft
-from gnuradio import gr
+from gnuradio import gr, filter
 from gnuradio.digital import ofdm_packet_utils
 
 import gr_papyrus
@@ -47,12 +47,12 @@ class ncofdm_filt(gr.hier_block2):
         self._carrier_map_bin = carrier_map_bin
 
         # setup filter banks
-        self.chan_filt_low = gr.fft_filter_ccc(1,[1]) 
-        self.chan_filt_high1 = gr.fft_filter_ccc(1,[1]) 
-        self.chan_filt_high2 = gr.fft_filter_ccc(1,[1])
-        self.chan_filt_high3 = gr.fft_filter_ccc(1,[1])
-        self.chan_filt_high4 = gr.fft_filter_ccc(1,[1])
-        self.chan_filt_high5 = gr.fft_filter_ccc(1,[1])
+        self.chan_filt_low = filter.fft_filter_ccc(1,[1]) 
+        self.chan_filt_high1 = filter.fft_filter_ccc(1,[1]) 
+        self.chan_filt_high2 = filter.fft_filter_ccc(1,[1])
+        self.chan_filt_high3 = filter.fft_filter_ccc(1,[1])
+        self.chan_filt_high4 = filter.fft_filter_ccc(1,[1])
+        self.chan_filt_high5 = filter.fft_filter_ccc(1,[1])
         
         # calculate the filter taps
         filt_num = self.calc_filter_taps(2, 0)
@@ -81,11 +81,11 @@ class ncofdm_filt(gr.hier_block2):
         tb = 1.0 / float(self._fft_length)
 
         # low-pass filter taps
-        self._chan_coeffs_low_tmp = gr.firdes.low_pass (1.0,                    # gain
+        self._chan_coeffs_low_tmp = filter.firdes.low_pass (1.0,                    # gain
                                               1.0,                          # sampling rate
                                               bw*filt_param[0]+tb*bw_mrgn, # midpoint of trans. band
                                               tb,                           # width of trans. band
-                                              gr.firdes.WIN_HAMMING)        # filter type
+                                              filter.firdes.WIN_HAMMING)        # filter type
         self._chan_coeffs_low = ()
         for i in range(len(self._chan_coeffs_low_tmp)):
             self._chan_coeffs_low = self._chan_coeffs_low \

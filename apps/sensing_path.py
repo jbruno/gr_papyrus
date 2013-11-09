@@ -20,9 +20,9 @@
 # Boston, MA 02110-1301, USA.
 # 
 
-from gnuradio import gr, window
-from gnuradio import uhd
-from gnuradio import eng_notation
+from gnuradio import gr, uhd, eng_notation
+from gnuradio.fft import window
+
 import copy
 import math
 # from current dir
