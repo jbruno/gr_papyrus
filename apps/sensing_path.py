@@ -20,7 +20,7 @@
 # Boston, MA 02110-1301, USA.
 # 
 
-from gnuradio import gr, uhd, eng_notation
+from gnuradio import gr, uhd, eng_notation, blocks, fft, filter
 from gnuradio.fft import window
 
 import copy
@@ -65,25 +65,25 @@ class sensing_path(gr.hier_block2):
 
         # linklab , setup the sensing path
         # FIXME: some components are not necessary
-        self.s2p = gr.stream_to_vector(gr.sizeof_gr_complex, self.fft_size)
+        self.s2p = blocks.stream_to_vector(gr.sizeof_gr_complex, self.fft_size)
         mywindow = window.blackmanharris(self.fft_size)
-        self.fft = gr.fft_vcc(self.fft_size, True, mywindow)
+        self.fft = fft.fft_vcc(self.fft_size, True, mywindow)
         power = 0
         for tap in mywindow:
             power += tap*tap
-        self.c2mag = gr.complex_to_mag(self.fft_size)
-        self.avg = gr.single_pole_iir_filter_ff(1.0, self.fft_size)
+        self.c2mag = blocks.complex_to_mag(self.fft_size)
+        self.avg = filter.single_pole_iir_filter_ff(1.0, self.fft_size)
 
         # linklab, ref scale value from default ref_scale in usrp_fft.py
         ref_scale = 13490.0
 
         # FIXME  We need to add 3dB to all bins but the DC bin
-        self.log = gr.nlog10_ff(20, self.fft_size,
+        self.log = blocks.nlog10_ff(20, self.fft_size,
                                 -10*math.log10(self.fft_size)              # Adjust for number of bins
                                 -10*math.log10(power/self.fft_size)        # Adjust for windowing loss
                                 -20*math.log10(ref_scale/2))               # Adjust for reference scale
 
-        self.sink = gr.message_sink(gr.sizeof_float * self.fft_size, self.msgq, True)
+        self.sink = blocks.message_sink(gr.sizeof_float * self.fft_size, self.msgq, True)
         self.connect(self, self.s2p, self.fft, self.c2mag, self.avg, self.log, self.sink)
 
     # linklab, get PSD map to perform smoothing

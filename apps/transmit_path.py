@@ -22,9 +22,7 @@
 import copy
 import sys
 
-from gnuradio import gr
-from gnuradio import uhd
-from gnuradio import eng_notation
+from gnuradio import gr, uhd, eng_notation, blocks
 
 import gr_papyrus
 
@@ -50,7 +48,7 @@ class transmit_path(gr.hier_block2):
         self.ofdm_tx = \
                      gr_papyrus.ofdm.ofdm_mod(options, msgq_limit=4, pad_for_usrp=False)
 
-        self.amp = gr.multiply_const_cc(1)
+        self.amp = blocks.multiply_const_cc(1)
         self.set_tx_amplitude(self._tx_amplitude)
 
         # Display some information about the setup
