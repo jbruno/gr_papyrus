@@ -1,0 +1,10 @@
+Commands to run:
+
+
+SENDER
+./ssma.py -f 920M --tx-gain 0 -s --occ=240 -W 0.4M --args "addr=192.168.10.3"
+
+RECEIVER:
+./ssma.py -f 920M --rx-gain 0 -r --occ=240 -W 0.4M --args "addr=192.168.10.2"
+
+
