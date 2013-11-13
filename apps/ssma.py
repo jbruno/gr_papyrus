@@ -22,7 +22,7 @@
 
 import math
 from optparse import OptionParser
-from threading import Timer
+from threading import Timer, Lock
 from subprocess import *
 import random
 import time
@@ -428,7 +428,7 @@ class ss_mac(object):
 
 
         # receiver
-        if not self.sender:
+        else:
             # print "receiver got a pkt"
             print "in receiver pkt_type = state = ", pkt_type, self.state
             self.last_pkt_time = time.time()
@@ -488,7 +488,7 @@ class ss_mac(object):
         self.traffic_index = 0
 
         while 1:
-            print self.state
+            
             if self.state == "RECV":
                 while self.state == "RECV":
                     if time.time() - self.last_pkt_time > SYNC_TIMEOUT:
@@ -591,12 +591,22 @@ class ss_mac(object):
 
         self.outage = 0
         self.traffic_index = 0
+        
+        #Some thread safety for the traffic timer
+        self.traffic_timer_lock = Lock()
+        self.traffic_timer_reset=False
         self.start_traffic_timer()
+        
         self.demand = self.generate_traffic()
         self.prev_demand = self.demand
 
         while 1:
-            print self.state
+            
+            if self.traffic_timer_reset:
+                with self.traffic_timer_lock:
+                    self.traffic_timer_reset=False
+                    self.start_traffic_timer()
+            
             if self.state == "TRAN":
                 self.pktno += 1
                 self.send_data(self.pktno)
@@ -649,9 +659,17 @@ class ss_mac(object):
         self.prev_carrier_map = SYNC_MAP
 
         if not self.sender:
-            self.receiver_loop()
+            try:
+                self.receiver_loop()
+            except KeyboardInterrupt:
+                raise SystemExit
         else:
-            self.sender_loop()
+            try:
+                self.sender_loop()
+            except KeyboardInterrupt:
+                with self.traffic_timer_lock:
+                    self.traffic_timer.cancel()
+                raise SystemExit
         return
 
     def wait_until_txq_empty(self):
@@ -673,7 +691,8 @@ class ss_mac(object):
 
     def handle_traffic_timeout(self):
         # restart traffic timer
-        self.start_traffic_timer()
+        with self.traffic_timer_lock:
+            self.traffic_timer_reset=True
 
         self.prev_demand = self.demand
         self.demand = self.generate_traffic()
@@ -948,17 +967,12 @@ def main():
     tb.start()    # Start executing the flow graph (runs in separate threads)
 
     mac.main_loop()    # don't expect this to return...
-    while 1:
-        pass
+    
 
 
 if __name__ == '__main__':
     try:
         main()
-    except KeyboardInterrupt:
-        print "KeyboardInterrupt in main"
-        sys.exit(1)
-        pass
     except Exception as inst:
         print "Exception caught"
         exc_type, exc_value, exc_traceback = sys.exc_info()
